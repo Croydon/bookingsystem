@@ -1,0 +1,14 @@
+sudo: false
+dist: trusty
+language: java
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+install:
+  - gradle assemble
+
+script:
+  - gradle check
