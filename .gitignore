@@ -18,7 +18,10 @@ nbproject/genfiles.properties
 nbproject/
 build/
 nbbuild/
-manifest.mf
+gradle/
+gradlew
+gradlew.bat
+local.properties
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
