@@ -1,14 +1,21 @@
 package bookingsystem;
 
 import java.util.Scanner;
+import java.sql.*;
 
 public class Bookingsystem {
 
     private static Scanner scanner = new Scanner(System.in);
     private static int usernumber = -1;
-    public static void main(String[] args) {
-        int option;
+    private static Connection conn;
 
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+
+        // Load the JDBC Driver and establish a DB connection
+        Class.forName("org.postgresql.Driver");
+        conn = DriverManager.getConnection("jdbc:" + dbconfig.typ + "://" + dbconfig.domain + ":" + dbconfig.port + "/" + dbconfig.database + "?user=" + dbconfig.user + "&password=" + dbconfig.password + "&ssl=" + dbconfig.ssl + "");
+
+        int option;
         while (true) {
             // Prints the menu and allows user to choose
             System.out.println("");
@@ -60,15 +67,21 @@ public class Bookingsystem {
         return true;
     }
 
-    private static void enterUsernumber() {
+    private static void enterUsernumber() throws SQLException {
         System.out.println("Geben Sie eine Kundennummer ein: ");
         int tmpUsernumber = scanner.nextInt();
         scanner.nextLine();
 
-        if (true) // TODO: SQL STATEMENT IF EXISTS
-        {
+        PreparedStatement st = conn.prepareStatement("SELECT kundennummer FROM " + dbconfig.database + ".passagier WHERE kundennummer = ?");
+        st.setInt(1, tmpUsernumber);
+        ResultSet rs = st.executeQuery();
 
+        if (rs.next()) {
+            usernumber = tmpUsernumber;
         } else {
+            rs.close();
+            st.close();
+
             System.out.println("Die Kundennummer existiert nicht!");
             System.out.println("Sie können einen neuen Benutzer anlegen.");
             System.out.println("Bitte geben Sie einen Vornamen an:");
@@ -76,12 +89,21 @@ public class Bookingsystem {
             System.out.println("Bitte geben Sie einen Nachnamen an:");
             String nachname = scanner.nextLine();
 
-            // TODO: SQL STATEMENT TO CREATE A NEW USER
-            // tmpUsernumber = nextnumber;
-            System.out.println("Der neue Benutzer wurde erfolgreich registriert!");
+            st = conn.prepareStatement("INSERT INTO " + dbconfig.database + ".passagier (vorname, nachname, kundennummer, bonusmeilenkonto) VALUES (?, ?, ?, 0)");
+            st.setString(1, vorname);
+            st.setString(2, nachname);
+            st.setInt(3, tmpUsernumber);
+            if (st.executeUpdate() > 0) {
+                System.out.println("Der neue Benutzer wurde erfolgreich registriert!");
+                usernumber = tmpUsernumber;
+            } else {
+                System.out.println("Der Benuter könnte nicht erfolgreich registriert werden. Ist die Benutzer-ID bereits vorhanden?");
+                usernumber = -1;
+            }
         }
 
-        usernumber = tmpUsernumber;
+        rs.close();
+        st.close();
     }
 
     private static void listPossibleFlights() {
@@ -98,6 +120,6 @@ public class Bookingsystem {
         System.out.println("Abflugdatum: ");
         String flightdate = scanner.nextLine();
 
-        // TODO: SQL STAMTE FOR BOOKING
+        // TODO: SQL STATMENT FOR BOOKING
     }
 }
