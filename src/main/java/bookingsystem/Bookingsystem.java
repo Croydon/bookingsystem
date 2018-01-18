@@ -2,14 +2,22 @@ package bookingsystem;
 
 import java.util.Scanner;
 import java.sql.*;
+import java.io.IOException;
 
 public class Bookingsystem {
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     private static int usernumber = -1;
     private static Connection conn;
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+
+        // Check if config file exists, if not create it by taken over the example config
+        // This is required so that the CI isn't failing
+        // Also nice for easy setup
+        // if (Files.exists(Paths.get("src/main/java/bookingsystem/dbconfig.java")) == false) {
+        //    Files.copy(Paths.get("src/main/java/bookingsystem/dbconfig.java.example"), Paths.get("src/main/java/bookingsystem/dbconfig.java"), COPY_ATTRIBUTES);
+        // }
 
         // Load the JDBC Driver and establish a DB connection
         Class.forName("org.postgresql.Driver");
@@ -106,11 +114,18 @@ public class Bookingsystem {
         st.close();
     }
 
-    private static void listPossibleFlights() {
+    private static void listPossibleFlights() throws SQLException {
         System.out.println("Bitte geben Sie ein Ziel ein. Entweder als IATA Code oder als Name:");
         String destiny = scanner.nextLine();
 
-        // TODO: Implement listing logic
+        PreparedStatement st = conn.prepareStatement("SELECT kundennummer FROM " + dbconfig.database + ".passagier WHERE kundennummer = ?");
+        st.setString(1, destiny);
+        st.setString(2, destiny);
+        ResultSet rs = st.executeQuery();
+
+        while (rs.next()) {
+
+        }
     }
 
     private static void book() {
