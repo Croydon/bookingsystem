@@ -3,6 +3,7 @@ package bookingsystem;
 import java.util.Scanner;
 import java.sql.*;
 import java.io.IOException;
+import java.text.ParseException;
 
 public class Bookingsystem {
 
@@ -10,7 +11,7 @@ public class Bookingsystem {
     private static int usernumber = -1;
     private static Connection conn;
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException, ParseException {
 
         // Check if config file exists, if not create it by taken over the example config
         // This is required so that the CI isn't failing
@@ -51,7 +52,7 @@ public class Bookingsystem {
 
                 case 3:
                     if (checkLogin() == true) {
-
+                        book();
                     }
                     break;
 
@@ -137,14 +138,30 @@ public class Bookingsystem {
         }
     }
 
-    private static void book() {
+    private static void book() throws SQLException, ParseException {
         System.out.println("Um ein Flug zu buchen, bitte geben Sie die Flugnummer und ein Abflugdatum ein.");
         System.out.println("Flugnummer: ");
         String flightnumber = scanner.nextLine();
         System.out.println("Abflugdatum: ");
         String flightdate = scanner.nextLine();
+        System.out.println("");
 
-        // TODO: SQL STATMENT FOR BOOKING
+        try {
+            PreparedStatement st = conn.prepareStatement("INSERT INTO " + dbconfig.database + ".buchung (kundennummer, flugnummer, datum_abflug, preis) VALUES (?, ?, ?, ?::numeric)");
+            st.setInt(1, usernumber);
+            st.setString(2, flightnumber);
+            st.setDate(3, Date.valueOf(flightdate));
+            st.setInt(4, 129);
+            if (st.executeUpdate() > 0) {
+                System.out.println("Der Flug wurde erfolgreich gebucht!");
+            } else {
+                System.out.println("Der Flug konnte nicht gebucht werden.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("");
+            System.out.println("Der Flug konnte nicht gebucht werden.");
+        }
     }
 
     private static String returnStringWithMinLength(String outputString) {
