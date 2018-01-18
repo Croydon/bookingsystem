@@ -177,7 +177,9 @@
         </module>
         <!-- <module name="MagicNumber"/> -->
         <module name="MissingSwitchDefault"/>
-        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanExpression">
+            <property name="severity" value="warning"/>
+        </module>
         <module name="SimplifyBooleanReturn"/>
 
         <!-- Checks for class design                         -->
@@ -186,7 +188,9 @@
         <!-- <module name="FinalClass"/> -->
         <!-- <module name="HideUtilityClassConstructor"/> -->
         <module name="InterfaceIsType"/>
-        <module name="VisibilityModifier"/>
+        <module name="VisibilityModifier">
+            <property name="severity" value="warning"/>
+        </module>
 
         <!-- Miscellaneous other checks.                   -->
         <!-- See http://checkstyle.sf.net/config_misc.html -->
