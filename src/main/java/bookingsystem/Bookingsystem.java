@@ -118,13 +118,22 @@ public class Bookingsystem {
         System.out.println("Bitte geben Sie ein Ziel ein. Entweder als IATA Code oder als Name:");
         String destiny = scanner.nextLine();
 
-        PreparedStatement st = conn.prepareStatement("SELECT kundennummer FROM " + dbconfig.database + ".passagier WHERE kundennummer = ?");
+        PreparedStatement st = conn.prepareStatement("SELECT flugnummer, datum_abflug, iata_start, iata_ziel, flughafenname FROM " + dbconfig.database + ".abflug NATURAL JOIN " + dbconfig.database + ".flug JOIN " + dbconfig.database + ".flughafen ON iata_ziel = iata WHERE iata_ziel LIKE CONCAT(?, '%') OR flughafenname LIKE CONCAT(?, '%');", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         st.setString(1, destiny);
         st.setString(2, destiny);
         ResultSet rs = st.executeQuery();
 
-        while (rs.next()) {
+        System.out.println("");
 
+        if (!rs.next()) {
+            System.out.println("Keine Abflüge gefunden!");
+        } else {
+            System.out.println(returnStringWithMinLength("Flugnummer") + returnStringWithMinLength("Abflugsdatum") + returnStringWithMinLength("IATA Start") + returnStringWithMinLength("IATA Ziel") + returnStringWithMinLength("Flughafennamen"));
+        }
+        rs.beforeFirst();
+
+        while (rs.next()) {
+            System.out.println(returnStringWithMinLength(rs.getString(1)) + returnStringWithMinLength(rs.getString(2)) + returnStringWithMinLength(rs.getString(3)) + returnStringWithMinLength(rs.getString(4)) + returnStringWithMinLength(rs.getString(5)));
         }
     }
 
@@ -136,5 +145,17 @@ public class Bookingsystem {
         String flightdate = scanner.nextLine();
 
         // TODO: SQL STATMENT FOR BOOKING
+    }
+
+    private static String returnStringWithMinLength(String outputString) {
+        int minLenght = 15;
+
+        if (outputString.length() < minLenght) {
+            for (int i = outputString.length(); i < minLenght; i++) {
+                outputString = outputString + " ";
+            }
+        }
+
+        return outputString;
     }
 }
