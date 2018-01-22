@@ -139,7 +139,7 @@ public class Bookingsystem {
     }
 
     private static void book() throws SQLException, ParseException {
-        System.out.println("Um ein Flug zu buchen, bitte geben Sie die Flugnummer und ein Abflugdatum ein.");
+        System.out.println("Um einen Flug zu buchen, bitte geben Sie die Flugnummer und ein Abflugdatum ein.");
         System.out.println("Flugnummer: ");
         String flightnumber = scanner.nextLine();
         System.out.println("Abflugdatum: ");
